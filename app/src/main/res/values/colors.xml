@@ -2,4 +2,6 @@
 <resources>
     <color name="nav_item_icon_tint_color">#333</color>
     <color name="nav_item_text_color">#333</color>
+    <color name="share_item1">#0288d1</color>
+    <color name="share_item1_pressed">#0288d1</color>
 </resources>
