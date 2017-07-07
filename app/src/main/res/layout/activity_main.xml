@@ -1,69 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.demo.mrma.demo.MainActivity">
+    android:background="#cc888888">
 
-    <!--<FrameLayout-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:background="#cc666666"-->
-        <!--tools:layout_constraintTop_creator="1"-->
-        <!--tools:layout_constraintBottom_creator="1"-->
-        <!--fab:layout_constraintBottom_toTopOf="parent"-->
-        <!--tools:layout_constraintLeft_creator="1"-->
-        <!--fab:layout_constraintLeft_toLeftOf="parent"-->
-        <!--fab:layout_constraintTop_toTopOf="parent"-->
-        <!--android:id="@+id/frameLayout" />-->
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_photo_camera"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="35dp"
+        fab:fab_size="normal"
+        fab:fab_showShadow="true"
+        fab:fab_shadowColor="#66000000"
+        fab:fab_shadowRadius="4dp"
+        fab:fab_shadowXOffset="1dp"
+        fab:fab_shadowYOffset="3dp"
+        fab:fab_colorNormal="#e91e63"
+        fab:fab_colorRipple="#ff6090"
+        fab:fab_colorPressed="#e91e63"/>
 
-    <!--<com.github.clans.fab.FloatingActionButton-->
-            <!--android:id="@+id/material_design_floating_action_menu_item2"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:src="@drawable/ic_share"-->
-            <!--fab:fab_size="normal"-->
-        <!--tools:layout_constraintTop_creator="1"-->
-        <!--tools:layout_constraintLeft_creator="1"-->
-        <!--fab:layout_constraintLeft_toLeftOf="parent"-->
-        <!--fab:layout_constraintTop_toTopOf="@+id/frameLayout"-->
-        <!--android:layout_marginLeft="0dp"-->
-        <!--android:layout_marginTop="16dp" />-->
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/album_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_camera"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="35dp"
+        android:layout_marginBottom="45dp"
+        fab:fab_showShadow="false"
+        fab:fab_progress_backgroundColor="@android:color/transparent"
+        fab:fab_colorNormal="@android:color/transparent"
+        fab:fab_colorPressed="@android:color/transparent"
+        fab:fab_colorRipple="#99aaaaaa"
+        fab:fab_size="mini"/>
 
-        <!--&lt;!&ndash;<android.support.design.widget.VisibilityAwareImageButton&ndash;&gt;-->
-            <!--&lt;!&ndash;android:id="@+id/switch_camera"&ndash;&gt;-->
-            <!--&lt;!&ndash;android:layout_width="wrap_content"&ndash;&gt;-->
-            <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
-            <!--&lt;!&ndash;android:src="@drawable/ic_switch_camera"&ndash;&gt;-->
-            <!--&lt;!&ndash;android:layout_gravity="bottom|end"&ndash;&gt;-->
-            <!--&lt;!&ndash;android:layout_marginBottom="33dp"&ndash;&gt;-->
-            <!--&lt;!&ndash;android:layout_marginEnd="25dp"/>&ndash;&gt;-->
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/front_camera_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_autorenew"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="35dp"
+        android:layout_marginBottom="45dp"
+        fab:fab_showShadow="false"
+        fab:fab_progress_backgroundColor="@android:color/transparent"
+        fab:fab_colorNormal="@android:color/transparent"
+        fab:fab_colorPressed="@android:color/transparent"
+        fab:fab_colorRipple="#fff"
+        fab:fab_size="mini"/>
 
-        <!--<android.support.design.widget.FloatingActionButton-->
-            <!--android:id="@+id/cameraButton"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="bottom|center"-->
-            <!--android:src="@drawable/ic_photo_camera"-->
-            <!--tools:layout_constraintTop_creator="1"-->
-            <!--tools:layout_constraintLeft_creator="1"-->
-            <!--fab:layout_constraintLeft_toLeftOf="@+id/material_design_floating_action_menu_item2"-->
-            <!--fab:layout_constraintTop_toTopOf="@+id/material_design_floating_action_menu_item2" />-->
-
-        <!--<com.github.clans.fab.FloatingActionButton-->
-            <!--android:id="@+id/material_design_floating_action_menu_item3"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:src="@drawable/ic_share"-->
-            <!--fab:fab_size="normal"-->
-            <!--tools:layout_constraintTop_creator="1"-->
-            <!--tools:layout_constraintLeft_creator="1"-->
-            <!--fab:layout_constraintLeft_toLeftOf="@+id/material_design_floating_action_menu_item2"-->
-            <!--fab:layout_constraintTop_toTopOf="@+id/material_design_floating_action_menu_item2"-->
-            <!--android:layout_marginLeft="288dp"-->
-            <!--android:layout_marginTop="477dp" />-->
-
-    <!--</FrameLayout>-->
-
-</android.support.constraint.ConstraintLayout>
+</FrameLayout>

@@ -5,44 +5,52 @@
     android:layout_height="match_parent">
 
     <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/share_button"
+        android:id="@+id/plus_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="11dp"
-        android:layout_marginEnd="11dp"
+        android:layout_marginBottom="175dp"
+        android:layout_marginEnd="25dp"
         fab:menu_animationDelayPerItem="55"
         fab:menu_backgroundColor="@android:color/transparent"
-        fab:menu_colorNormal="#da3c2f"
-        fab:menu_colorPressed="#dc4b3f"
-        fab:menu_colorRipple="#99d4d4d4"
+        fab:menu_colorNormal="#0064b7"
+        fab:menu_colorRipple="#9964c1ff"
+        fab:menu_colorPressed="#0064b7"
         fab:menu_fab_size="normal"
-        fab:menu_icon="@drawable/ic_share"
         fab:menu_openDirection="up"
-        fab:menu_shadowColor="#66aff198"
-        fab:menu_shadowRadius="4dp"
+        fab:menu_shadowColor="#cc666666"
+        fab:menu_shadowRadius="2dp"
         fab:menu_showShadow="true">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/material_design_floating_action_menu_item1"
+            android:id="@+id/recovery_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_share"
+            android:src="@drawable/ic_recovery"
+            fab:fab_colorNormal="#ff3d00"
+            fab:fab_colorRipple="#ff7539"
+            fab:fab_colorPressed="#ff3d00"
             fab:fab_size="normal" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/material_design_floating_action_menu_item2"
+            android:id="@+id/we_chat_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_share"
+            fab:fab_colorNormal="#009624"
+            fab:fab_colorRipple="#5efc82"
+            fab:fab_colorPressed="#009624"
             fab:fab_size="normal" />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/material_design_floating_action_menu_item3"
+            android:id="@+id/download_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_share"
+            android:src="@drawable/ic_file_download"
+            fab:fab_colorNormal="#ffc400"
+            fab:fab_colorRipple="#fff64f"
+            fab:fab_colorPressed="#ffc400"
             fab:fab_size="normal" />
 
     </com.github.clans.fab.FloatingActionMenu>
