@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/background">
 
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/plus_buttons"
@@ -54,5 +55,9 @@
             fab:fab_size="normal" />
 
     </com.github.clans.fab.FloatingActionMenu>
+
+    <include layout="@layout/list_item">
+
+    </include>
 
 </RelativeLayout>
