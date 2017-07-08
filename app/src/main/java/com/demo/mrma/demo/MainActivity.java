@@ -1,9 +1,13 @@
 package com.demo.mrma.demo;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
@@ -16,17 +20,19 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FloatingActionButton recovery,frontCamera;
+    private FloatingActionButton shotBtn,frontCameraBtn,albumBtn;
     private RecyclerView styleList;
     private List<Integer> mDatas;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.show_photo);
+        setContentView(R.layout.activity_main);
+//        初始化
         init();
+//        初始化数据
         initData();
+//        所有点击事件
         allClick();
 //        设置布局管理器
 //        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -38,8 +44,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void init () {
-        recovery = (FloatingActionButton) findViewById(R.id.recovery_button);
-        frontCamera = (FloatingActionButton) findViewById(R.id.front_camera_button);
+        shotBtn = (FloatingActionButton) findViewById(R.id.camera_button);
+        albumBtn = (FloatingActionButton) findViewById(R.id.album_button);
+        frontCameraBtn = (FloatingActionButton) findViewById(R.id.front_camera_button);
         styleList = (RecyclerView) findViewById(R.id.list_view);
     }
 
@@ -51,21 +58,31 @@ public class MainActivity extends AppCompatActivity {
 
     public void allClick () {
 
-//      recovery clickEvent
-        recovery.setOnClickListener(new View.OnClickListener() {
+//        拍照按钮
+        shotBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, Photo_handler.class);
+                startActivity(intent);
             }
         });
 
-//        frontCamera clickEvent
-//        frontCamera.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(MainActivity.this, "haha", Toast.LENGTH_SHORT).show();
-//            }
-//        });
+//        切换前置摄像头
+        frontCameraBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "front", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+//        相册按钮
+        albumBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, "album", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 }

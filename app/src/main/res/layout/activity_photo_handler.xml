@@ -5,6 +5,18 @@
     android:layout_height="match_parent"
     android:background="@drawable/background">
 
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_back"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        fab:fab_colorNormal="#55666666"
+        fab:fab_colorRipple="#77ffffff"
+        fab:fab_colorPressed="#55666666"
+        fab:fab_size="mini" />
+
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/plus_buttons"
         android:layout_width="wrap_content"
