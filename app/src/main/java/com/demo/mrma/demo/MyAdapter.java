@@ -1,6 +1,6 @@
 package com.demo.mrma.demo;
 
-import android.content.Context;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,51 +11,44 @@ import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.myHolder>
 {
+    public static class myHolder extends RecyclerView.ViewHolder {
 
-    private LayoutInflater mInflater;
-    private List<Integer> mDatas;
+        CardView cv;
+        ImageView stylePhoto;
 
-    public MyAdapter(Context context, List<Integer> datas)
-    {
-        mInflater = LayoutInflater.from(context);
-        mDatas = datas;
-    }
-
-    public class myHolder extends RecyclerView.ViewHolder
-    {
-        private ImageView mImg;
-
-        public myHolder(View v)
-        {
-            super(v);
-            mImg = v.findViewById(R.id.style_01);
+        myHolder(View itemView) {
+            super(itemView);
+            cv = itemView.findViewById(R.id.allStyles);
+            stylePhoto = itemView.findViewById(R.id.style_pic);
         }
-
     }
 
-    /**
-     * 创建ViewHolder
-     */
-    @Override
-    public myHolder onCreateViewHolder(ViewGroup parent, int ViewType)
-    {
-        View view = mInflater.inflate(R.layout.list_view, parent, false);
-        return new myHolder(view);
-    }
+    List<Styles> styles;
 
-    /**
-     * 设置值
-     */
-    @Override
-    public void onBindViewHolder(myHolder viewHolder, int i)
-    {
-        viewHolder.mImg.setImageResource(mDatas.get(i));
+    MyAdapter(List<Styles> styles){
+        this.styles = styles;
     }
 
     @Override
-    public int getItemCount()
-    {
-        return mDatas.size();
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public myHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup, false);
+        myHolder mh = new myHolder(v);
+        return mh;
+    }
+
+    @Override
+    public void onBindViewHolder(myHolder ViewHolder, int i) {
+        ViewHolder.stylePhoto.setImageResource(styles.get(i).photoId);
+    }
+
+    @Override
+    public int getItemCount() {
+        return styles.size();
     }
 
 }

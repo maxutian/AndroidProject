@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_back"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
         fab:fab_colorNormal="#55666666"
         fab:fab_colorRipple="#77ffffff"
         fab:fab_colorPressed="#55666666"
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="175dp"
+        android:layout_marginBottom="190dp"
         android:layout_marginEnd="25dp"
         fab:menu_animationDelayPerItem="55"
         fab:menu_backgroundColor="@android:color/transparent"
@@ -68,8 +68,7 @@
 
     </com.github.clans.fab.FloatingActionMenu>
 
-    <include layout="@layout/list_item">
+    <include layout="@layout/list_view" />
 
-    </include>
 
 </RelativeLayout>
