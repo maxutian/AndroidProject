@@ -26,7 +26,7 @@ public class Photo_handler extends Activity {
         setContentView(R.layout.activity_photo_handler);
         init();
         allClick();
-        //        初始化数据
+//        初始化数据
         initializeData();
 //        初始化适配器
         initializeAdapter();
