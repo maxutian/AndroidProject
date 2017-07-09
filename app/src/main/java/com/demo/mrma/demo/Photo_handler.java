@@ -1,9 +1,9 @@
 package com.demo.mrma.demo;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -19,6 +19,7 @@ public class Photo_handler extends Activity {
     private FloatingActionButton backBtn,recoveryBtn,we_chatBtn,downloadBtn;
     private List<Styles> styles;
     private RecyclerView rv;
+    private MyAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +30,20 @@ public class Photo_handler extends Activity {
 //        初始化数据
         initializeData();
 //        初始化适配器
-        initializeAdapter();
+//        initializeAdapter();
 //        设置布局管理器
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        rv.setHasFixedSize(true);
         rv.setLayoutManager(linearLayoutManager);
+        myAdapter = new MyAdapter(styles);
+        rv.setAdapter(myAdapter);
+        myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Toast.makeText(Photo_handler.this, position, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void init () {
@@ -58,10 +68,10 @@ public class Photo_handler extends Activity {
 
 //    设置adapter
 
-    private void initializeAdapter(){
-        MyAdapter adapter = new MyAdapter(styles);
-        rv.setAdapter(adapter);
-    }
+//    private void initializeAdapter(){
+//        myAdapter = new MyAdapter(styles);
+//        rv.setAdapter(myAdapter);
+//    }
 
     public void allClick() {
 
