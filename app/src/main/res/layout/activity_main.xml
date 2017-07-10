@@ -9,14 +9,13 @@
         android:id="@+id/flash_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_flash"
         android:layout_gravity="top|start"
+        android:src="@drawable/ic_flash_auto"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         fab:fab_showShadow="false"
-        fab:fab_colorNormal="#55666666"
-        fab:fab_colorRipple="#77ffffff"
-        fab:fab_colorPressed="#55666666"
+        fab:fab_colorNormal="@android:color/transparent"
+        fab:fab_colorPressed="@android:color/transparent"
         fab:fab_size="normal"/>
 
     <com.github.clans.fab.FloatingActionButton

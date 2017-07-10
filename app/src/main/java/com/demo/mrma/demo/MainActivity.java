@@ -1,6 +1,7 @@
 package com.demo.mrma.demo;
 
 import android.content.Intent;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,10 +9,12 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 
+import java.io.File;
+
 public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton flashBtn,shotBtn,frontCameraBtn,albumBtn;
-    private int clickCount = 0;
+    private static final int REQUEST_IMAGE_CAPTURE_FULL = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,10 +24,11 @@ public class MainActivity extends AppCompatActivity {
         init();
 //        所有点击事件
         allClick();
+//        打开相机界面
+        dispatchTakePictureIntent(REQUEST_IMAGE_CAPTURE_FULL);
     }
 
 //    实例化变量
-
     public void init () {
         flashBtn = (FloatingActionButton) findViewById(R.id.flash_button);
         shotBtn = (FloatingActionButton) findViewById(R.id.camera_button);
@@ -33,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 //    所有点击事件
-
     public void allClick () {
 
 //        拍照按钮
@@ -66,24 +69,15 @@ public class MainActivity extends AppCompatActivity {
         flashBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ++clickCount;
-                if (clickCount == 3){
-                    clickCount = 0;
-                }
-                switch (clickCount){
-                    case 0:
-                        flashBtn.setImageResource(R.drawable.ic_flash_auto);
-                        break;
-                    case 1:
-                        flashBtn.setImageResource(R.drawable.ic_flash);
-                        break;
-                    case 2:
-                        flashBtn.setImageResource(R.drawable.ic_flash_off);
-                        break;
-                }
+
             }
         });
 
+    }
+
+    private void dispatchTakePictureIntent(int actionCode) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(takePictureIntent, actionCode);
     }
 
 }
