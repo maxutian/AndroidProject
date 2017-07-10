@@ -11,6 +11,7 @@ import com.github.clans.fab.FloatingActionButton;
 public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton flashBtn,shotBtn,frontCameraBtn,albumBtn;
+    private int clickCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,9 +66,24 @@ public class MainActivity extends AppCompatActivity {
         flashBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                flashBtn.setBackgroundResource(R.drawable.ic_autorenew);
+                ++clickCount;
+                if (clickCount == 3){
+                    clickCount = 0;
+                }
+                switch (clickCount){
+                    case 0:
+                        flashBtn.setImageResource(R.drawable.ic_flash_auto);
+                        break;
+                    case 1:
+                        flashBtn.setImageResource(R.drawable.ic_flash);
+                        break;
+                    case 2:
+                        flashBtn.setImageResource(R.drawable.ic_flash_off);
+                        break;
+                }
             }
         });
 
     }
+
 }
