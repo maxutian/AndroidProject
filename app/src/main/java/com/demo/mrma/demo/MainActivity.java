@@ -1,9 +1,15 @@
 package com.demo.mrma.demo;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -13,6 +19,9 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton flashBtn,shotBtn,frontCameraBtn,albumBtn;
+    private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
+    private File tempFile;
+    private ImageView iv_image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         shotBtn = (FloatingActionButton) findViewById(R.id.camera_button);
         albumBtn = (FloatingActionButton) findViewById(R.id.album_button);
         frontCameraBtn = (FloatingActionButton) findViewById(R.id.front_camera_button);
+        iv_image = (ImageView) findViewById(R.id.iv_image);
     }
 
 //    所有点击事件
@@ -58,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         albumBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(MainActivity.this, "album", Toast.LENGTH_SHORT).show();
+                gallery();
             }
         });
 
@@ -70,6 +80,54 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+//    打开相册
+    public void gallery() {
+        // 激活系统图库，选择一张图片
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_GALLERY
+        startActivityForResult(intent, PHOTO_REQUEST_GALLERY);
+    }
+
+//    返回选中的图片
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PHOTO_REQUEST_GALLERY) {
+            // 从相册返回的数据
+            if (data != null) {
+                // 得到图片的全路径
+                Uri uri = data.getData();
+                Bitmap bitmap = getBitmapFromUri(uri);
+                this.iv_image.setImageBitmap(bitmap);
+            }
+            try {
+                // 将临时文件删除
+                tempFile.delete();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+//    将uri转成bitmap对象
+    private Bitmap getBitmapFromUri(Uri uri)
+    {
+        try
+        {
+            // 读取uri所在的图片
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+            return bitmap;
+        }
+        catch (Exception e)
+        {
+            Log.e("[Android]", e.getMessage());
+            Log.e("[Android]", "目录为：" + uri);
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
