@@ -1,7 +1,6 @@
 package com.demo.mrma.demo;
 
 import android.content.Intent;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,7 +13,6 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton flashBtn,shotBtn,frontCameraBtn,albumBtn;
-    private static final int REQUEST_IMAGE_CAPTURE_FULL = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 //        所有点击事件
         allClick();
 //        打开相机界面
-        dispatchTakePictureIntent(REQUEST_IMAGE_CAPTURE_FULL);
     }
 
 //    实例化变量
@@ -73,11 +70,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void dispatchTakePictureIntent(int actionCode) {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(takePictureIntent, actionCode);
     }
 
 }
