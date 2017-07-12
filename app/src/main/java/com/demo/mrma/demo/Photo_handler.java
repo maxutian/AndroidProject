@@ -2,11 +2,13 @@ package com.demo.mrma.demo;
 
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.app.Activity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -20,6 +22,8 @@ public class Photo_handler extends Activity {
     private List<Styles> styles;
     private RecyclerView rv;
     private MyAdapter myAdapter;
+    private ImageView iv_image;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +40,7 @@ public class Photo_handler extends Activity {
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         rv.setHasFixedSize(true);
         rv.setLayoutManager(linearLayoutManager);
+//        设置adapter
         myAdapter = new MyAdapter(styles);
         rv.setAdapter(myAdapter);
         myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
@@ -44,6 +49,8 @@ public class Photo_handler extends Activity {
                 Toast.makeText(Photo_handler.this, position, Toast.LENGTH_SHORT).show();
             }
         });
+//        设置imgview
+        receive();
     }
 
     public void init () {
@@ -52,6 +59,7 @@ public class Photo_handler extends Activity {
         we_chatBtn = findViewById(R.id.we_chat_button);
         downloadBtn = findViewById(R.id.download_button);
         rv = findViewById(R.id.list_view);
+        iv_image = findViewById(R.id.iv_image);
     }
 
     //    初始化数据
@@ -66,12 +74,15 @@ public class Photo_handler extends Activity {
         styles.add(new Styles(R.drawable.style_006));
     }
 
-//    设置adapter
-
-//    private void initializeAdapter(){
-//        myAdapter = new MyAdapter(styles);
-//        rv.setAdapter(myAdapter);
-//    }
+//    接收bitmap对象
+    public void receive () {
+        Intent intent = getIntent();
+        if (intent != null) {
+            Bitmap bitmap = intent.getParcelableExtra("bitmap");
+            Bitmap bit = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight());
+            iv_image.setImageBitmap(bit);
+        }
+    }
 
     public void allClick() {
 

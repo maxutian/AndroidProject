@@ -5,10 +5,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/darker_gray">
 
-    <ImageView
-        android:id="@+id/iv_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+
 
     <com.github.clans.fab.FloatingActionButton
         android:id="@+id/flash_button"

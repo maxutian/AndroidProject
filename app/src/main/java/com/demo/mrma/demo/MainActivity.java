@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton flashBtn,shotBtn,frontCameraBtn,albumBtn;
     private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
     private File tempFile;
-    private ImageView iv_image;
+    private Bitmap transBit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         shotBtn = (FloatingActionButton) findViewById(R.id.camera_button);
         albumBtn = (FloatingActionButton) findViewById(R.id.album_button);
         frontCameraBtn = (FloatingActionButton) findViewById(R.id.front_camera_button);
-        iv_image = (ImageView) findViewById(R.id.iv_image);
     }
 
 //    所有点击事件
@@ -69,6 +68,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 gallery();
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, Photo_handler.class);
+                intent.putExtra("bitmap", transBit);
+                startActivity(intent);
             }
         });
 
@@ -99,8 +102,7 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 // 得到图片的全路径
                 Uri uri = data.getData();
-                Bitmap bitmap = getBitmapFromUri(uri);
-                this.iv_image.setImageBitmap(bitmap);
+                transBit = getBitmapFromUri(uri);
             }
             try {
                 // 将临时文件删除
@@ -118,13 +120,10 @@ public class MainActivity extends AppCompatActivity {
         try
         {
             // 读取uri所在的图片
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-            return bitmap;
+            return (MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri));
         }
         catch (Exception e)
         {
-            Log.e("[Android]", e.getMessage());
-            Log.e("[Android]", "目录为：" + uri);
             e.printStackTrace();
             return null;
         }
