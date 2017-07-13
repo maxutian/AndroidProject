@@ -3,8 +3,11 @@ package com.demo.mrma.demo;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -78,9 +81,27 @@ public class Photo_handler extends Activity {
     public void receive () {
         Intent intent = getIntent();
         if (intent != null) {
-            Bitmap bitmap = intent.getParcelableExtra("bitmap");
-            Bitmap bit = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight());
-            iv_image.setImageBitmap(bit);
+//            byte [] bis = intent.getByteArrayExtra("bitmap");
+//            Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
+//            iv_image.setImageBitmap(bitmap);
+            Uri uri = getIntent().getData();
+            Bitmap bitmap = getBitmapFromUri(uri);
+            iv_image.setImageBitmap(bitmap);
+        }
+    }
+
+    //    将uri转成bitmap对象
+    private Bitmap getBitmapFromUri(Uri uri)
+    {
+        try
+        {
+            // 读取uri所在的图片
+            return (MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            return null;
         }
     }
 

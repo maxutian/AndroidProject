@@ -8,7 +8,8 @@
     <ImageView
         android:id="@+id/iv_image"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 
     <com.github.clans.fab.FloatingActionButton
         android:id="@+id/back_button"
@@ -37,7 +38,7 @@
         fab:menu_colorPressed="#0064b7"
         fab:menu_fab_size="normal"
         fab:menu_openDirection="up"
-        fab:menu_shadowColor="#cc666666"
+        fab:menu_shadowColor="#222222"
         fab:menu_shadowRadius="2dp"
         fab:menu_showShadow="true">
 

@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
@@ -21,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton flashBtn,shotBtn,frontCameraBtn,albumBtn;
     private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
     private File tempFile;
-    private Bitmap transBit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,10 +68,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 gallery();
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, Photo_handler.class);
-                intent.putExtra("bitmap", transBit);
-                startActivity(intent);
+
             }
         });
 
@@ -102,7 +99,10 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 // 得到图片的全路径
                 Uri uri = data.getData();
-                transBit = getBitmapFromUri(uri);
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, Photo_handler.class);
+                intent.setData(uri);
+                startActivity(intent);
             }
             try {
                 // 将临时文件删除
@@ -114,19 +114,6 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-//    将uri转成bitmap对象
-    private Bitmap getBitmapFromUri(Uri uri)
-    {
-        try
-        {
-            // 读取uri所在的图片
-            return (MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
-    }
+
 
 }
