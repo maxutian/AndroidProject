@@ -3,7 +3,6 @@ package com.demo.mrma.demo;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
@@ -36,8 +35,6 @@ public class Photo_handler extends Activity {
         allClick();
 //        初始化数据
         initializeData();
-//        初始化适配器
-//        initializeAdapter();
 //        设置布局管理器
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -81,9 +78,6 @@ public class Photo_handler extends Activity {
     public void receive () {
         Intent intent = getIntent();
         if (intent != null) {
-//            byte [] bis = intent.getByteArrayExtra("bitmap");
-//            Bitmap bitmap = BitmapFactory.decodeByteArray(bis, 0, bis.length);
-//            iv_image.setImageBitmap(bitmap);
             Uri uri = getIntent().getData();
             Bitmap bitmap = getBitmapFromUri(uri);
             iv_image.setImageBitmap(bitmap);
