@@ -49,7 +49,7 @@ public class Photo_handler extends Activity {
                 Toast.makeText(Photo_handler.this, position, Toast.LENGTH_SHORT).show();
             }
         });
-//        设置imgview
+//        设置imgview图片
         receive();
     }
 

@@ -14,7 +14,7 @@ import java.io.File;
 public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton flashBtn,shotBtn,frontCameraBtn,albumBtn;
-    private static final int PHOTO_REQUEST_GALLERY = 2;// 从相册中选择
+    private static final int PHOTO_REQUEST_GALLERY = 2;
     private File tempFile;
 
     @Override
@@ -25,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         init();
 //        所有点击事件
         allClick();
-//        打开相机界面
     }
 
 //    实例化变量
@@ -62,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 gallery();
-
             }
         });
 
@@ -93,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 // 得到图片的全路径
                 Uri uri = data.getData();
+//                传递uri
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, Photo_handler.class);
                 intent.setData(uri);
@@ -107,7 +106,5 @@ public class MainActivity extends AppCompatActivity {
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
 
 }
