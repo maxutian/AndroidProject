@@ -1,6 +1,7 @@
 package com.demo.mrma.demo;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -15,16 +16,19 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Photo_handler extends Activity {
 
-    private FloatingActionButton backBtn,recoveryBtn,we_chatBtn,downloadBtn;
+    private FloatingActionButton backBtn,recoveryBtn,shareBtn,downloadBtn;
     private List<Styles> styles;
     private RecyclerView rv;
     private MyAdapter myAdapter;
     private ImageView iv_image;
+    private Uri myUri;
 
 
     @Override
@@ -56,7 +60,7 @@ public class Photo_handler extends Activity {
     public void init () {
         backBtn = findViewById(R.id.back_button);
         recoveryBtn = findViewById(R.id.recovery_button);
-        we_chatBtn = findViewById(R.id.we_chat_button);
+        shareBtn = findViewById(R.id.share_button);
         downloadBtn = findViewById(R.id.download_button);
         rv = findViewById(R.id.list_view);
         iv_image = findViewById(R.id.iv_image);
@@ -79,6 +83,7 @@ public class Photo_handler extends Activity {
         Intent intent = getIntent();
         if (intent != null) {
             Uri uri = getIntent().getData();
+            myUri = uri;
             Bitmap bitmap = getBitmapFromUri(uri);
             iv_image.setImageBitmap(bitmap);
         }
@@ -119,11 +124,11 @@ public class Photo_handler extends Activity {
             }
         });
 
-//        分享到微信按钮
-        we_chatBtn.setOnClickListener(new View.OnClickListener() {
+//        分享按钮
+        shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(Photo_handler.this, "share", Toast.LENGTH_SHORT).show();
+                shareImg(myUri);
             }
         });
 
@@ -135,6 +140,15 @@ public class Photo_handler extends Activity {
             }
         });
 
+    }
+
+    private void shareImg(Uri uri){
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        if(uri!=null){
+            shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+            shareIntent.setType("image/*");
+        }
+        startActivity(shareIntent);
     }
 
 }

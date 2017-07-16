@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
             if (data != null) {
                 // 得到图片的全路径
                 Uri uri = data.getData();
-//                传递uri
+                // 传递uri
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, Photo_handler.class);
                 intent.setData(uri);
