@@ -1,7 +1,6 @@
 package com.demo.mrma.demo;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -16,8 +15,6 @@ import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 
-import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +26,6 @@ public class Photo_handler extends Activity {
     private MyAdapter myAdapter;
     private ImageView iv_image;
     private Uri myUri;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
