@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -28,11 +29,15 @@ import com.github.clans.fab.FloatingActionButton;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
 import utils.Configutils;
+
+import static java.lang.System.out;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -72,8 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     /*
         * 画面捕捉*/
-    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED) {
+    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
         Log.i("TEST","Granted");
         //init(barcodeScannerView, getIntent(), null);
     } else {
@@ -101,10 +105,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onAutoFocus(boolean success, Camera camera) {
                         if(success){
                             camera.takePicture(null,null,new TakePic());
-                            Intent intent = new Intent();
-                            intent.setClass(MainActivity.this, Photo_handler.class);
-                            intent.setData(sharePic);
-                            startActivity(intent);
+
                         }
                     }
                 });
@@ -204,39 +205,12 @@ public class MainActivity extends AppCompatActivity {
         public void onPictureTaken(byte[] data, Camera camera) {
 
             if (data.length > 0){  //大于0代表有数据
-                //               Bitmap bitmap = BitmapFactory.decodeByteArray(data,0,data.length);
-                //               iv.setImageBitmap(bitmap);
-                saveSdcard(data);
+                Bitmap bitmap = BitmapFactory.decodeByteArray(data,0,data.length);
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, Photo_handler.class);
+                intent.putExtra("selectedImage", bitmap);
+                startActivity(intent);
             }
-        }
-    }
-
-    private void saveSdcard(byte[] b){
-        File dir = new File(Configutils.GalleryPath);
-        if (!dir.exists()){
-            dir.mkdirs();
-        }
-
-        String picName = System.currentTimeMillis() + ".jpg";
-        try {
-            File picFile = new File(dir.getPath(),picName);
-            Bitmap bitmap = BitmapFactory.decodeByteArray(b,0,b.length);
-            Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null,null));
-            sharePic = uri;
-            FileOutputStream fo = new FileOutputStream(picFile);
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fo);
-            bitmap.compress(Bitmap.CompressFormat.JPEG,70,bufferedOutputStream);
-
-            fo.flush();
-            fo.close();
-            bufferedOutputStream.flush();
-            bufferedOutputStream.close();
-
-            Toast.makeText(this,"保存成功",Toast.LENGTH_SHORT).show();
-        }
-
-        catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

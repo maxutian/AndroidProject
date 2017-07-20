@@ -1,15 +1,19 @@
 package com.demo.mrma.demo;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -74,7 +78,7 @@ public class Photo_handler extends Activity {
         styles.add(new Styles(R.drawable.style_006));
     }
 
-//    接收bitmap对象
+    //    接收uri&&bitmap
     public void receive () {
         Intent intent = getIntent();
         if (intent != null) {
@@ -82,6 +86,28 @@ public class Photo_handler extends Activity {
             myUri = uri;
             Bitmap bitmap = getBitmapFromUri(uri);
             iv_image.setImageBitmap(bitmap);
+        }
+        Bitmap bitmap = this.getIntent().getParcelableExtra("selectedImage");
+        if(bitmap != null)
+        {
+            int width = bitmap.getWidth();
+            int height = bitmap.getHeight();
+            // 设置想要的大小
+            WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            int newWidth = display.getWidth();
+            int newHeight = display.getHeight();
+            // 计算缩放比例
+            float scaleWidth = ((float) newWidth) / height;
+            float scaleHeight = ((float) newHeight) / width;
+            // 取得想要缩放的matrix参数
+            Matrix matrix = new Matrix();
+            matrix.setRotate(90);
+            matrix.postScale(scaleWidth, scaleHeight);
+            // 得到新的图片
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
+            iv_image.setImageBitmap(bitmap);
+            iv_image.invalidate();
         }
     }
 

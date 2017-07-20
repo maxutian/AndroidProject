@@ -9,7 +9,7 @@
         android:id="@+id/iv_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-37dp"
+        android:layout_marginTop="0dp"
         android:layout_alignParentTop="true"/>
 
     <com.github.clans.fab.FloatingActionButton
