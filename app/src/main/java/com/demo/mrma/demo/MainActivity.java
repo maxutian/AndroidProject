@@ -206,10 +206,37 @@ public class MainActivity extends AppCompatActivity {
 
             if (data.length > 0){  //大于0代表有数据
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data,0,data.length);
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, Photo_handler.class);
-                intent.putExtra("selectedImage", bitmap);
-                startActivity(intent);
+//                Intent intent = new Intent();
+//                intent.setClass(MainActivity.this, Photo_handler.class);
+//                intent.putExtra("selectedImage", bitmap);
+//                startActivity(intent);
+                if(bitmap!=null){
+
+                    File file=new File(Environment.getExternalStorageDirectory()+"/isifeng");
+                    if(!file.isDirectory()){
+                        file.mkdir();
+                    }
+
+                    file=new File(Environment.getExternalStorageDirectory()+"/isifeng",System.currentTimeMillis()+".jpg");
+
+
+                    try
+                    {
+                        FileOutputStream fileOutputStream=new FileOutputStream(file);
+                        bitmap.compress(Bitmap.CompressFormat.JPEG,100, fileOutputStream);
+
+                        fileOutputStream.flush();
+                        fileOutputStream.close();
+                    }
+                    catch(IOException e){
+                        e.printStackTrace();
+                    }
+                    catch(Exception exception)
+                    {
+                        exception.printStackTrace();
+                    }
+
+                }
             }
         }
     }
@@ -248,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
             parameters.setPictureSize(i1,i2);  //大小
             parameters.setJpegQuality(80);  //质量
             parameters.setPreviewFrameRate(5);  //每秒帧数
+            System.out.println(i1);
 
         }
 
