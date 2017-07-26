@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
@@ -15,10 +16,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private List<Styles> styles;
     private Context context;
+    private String[] styleName;
+    private int[] useTime;
 
-    public MyAdapter(Context context, List<Styles> styles){
+
+    public MyAdapter(Context context, List<Styles> styles, String[] styleName, int[] useTime){
         this.styles = styles;
         this.context = context;
+        this.useTime = useTime;
+        this.styleName = styleName;
     }
 
     @Override
@@ -53,10 +59,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // Handles the row being being clicked
         @Override
         public void onClick(View view) {
-            Toast.makeText(context, "haha", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, styleName[getAdapterPosition()], Toast.LENGTH_SHORT).show();
+            useTime[getAdapterPosition()] += 1;
         }
     }
-
 
 }
 

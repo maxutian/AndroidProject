@@ -15,6 +15,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -26,6 +27,8 @@ public class Photo_handler extends Activity {
 
     private FloatingActionButton backBtn,recoveryBtn,shareBtn,downloadBtn;
     private List<Styles> styles;
+    private String[] styleName = {"style_001", "style_002", "style_003", "style_004"};
+    private int[] useTime = {0, 0, 0, 0};
     private RecyclerView rv;
     private MyAdapter myAdapter;
     private ImageView iv_image;
@@ -45,7 +48,7 @@ public class Photo_handler extends Activity {
         rv.setHasFixedSize(true);
         rv.setLayoutManager(linearLayoutManager);
 //        设置adapter
-        myAdapter = new MyAdapter(Photo_handler.this, styles);
+        myAdapter = new MyAdapter(Photo_handler.this, styles, styleName, useTime);
         rv.setAdapter(myAdapter);
 //        设置imgview图片
         receive();
@@ -68,8 +71,8 @@ public class Photo_handler extends Activity {
         styles.add(new Styles(R.drawable.style_002));
         styles.add(new Styles(R.drawable.style_003));
         styles.add(new Styles(R.drawable.style_004));
-        styles.add(new Styles(R.drawable.style_005));
-        styles.add(new Styles(R.drawable.style_006));
+
+
     }
 
     //    接收uri&&bitmap
