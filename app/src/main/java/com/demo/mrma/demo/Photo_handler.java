@@ -45,14 +45,8 @@ public class Photo_handler extends Activity {
         rv.setHasFixedSize(true);
         rv.setLayoutManager(linearLayoutManager);
 //        设置adapter
-        myAdapter = new MyAdapter(styles);
+        myAdapter = new MyAdapter(Photo_handler.this, styles);
         rv.setAdapter(myAdapter);
-        myAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(View view, int position) {
-                Toast.makeText(Photo_handler.this, position, Toast.LENGTH_SHORT).show();
-            }
-        });
 //        设置imgview图片
         receive();
     }

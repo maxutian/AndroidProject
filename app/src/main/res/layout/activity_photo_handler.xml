@@ -75,7 +75,20 @@
 
     </com.github.clans.fab.FloatingActionMenu>
 
-    <include layout="@layout/list_view" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/list_view"
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:foregroundGravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="15dp"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

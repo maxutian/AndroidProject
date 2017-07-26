@@ -1,79 +1,36 @@
 package com.demo.mrma.demo;
 
+import android.content.Context;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.util.List;
 
-public class MyAdapter extends RecyclerView.Adapter<MyAdapter.myHolder> implements View.OnClickListener
-{
+public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
-    //    设置数据来源
     private List<Styles> styles;
+    private Context context;
 
-    public MyAdapter(List<Styles> styles){
+    public MyAdapter(Context context, List<Styles> styles){
         this.styles = styles;
-    }
-
-    //    item点击事件
-    private OnItemClickListener mOnItemClickListener = null;
-
-    //define interface
-    public interface OnItemClickListener {
-        void onItemClick(View view , int position);
-    }
-
-
-    //    设置item数据
-    public static class myHolder extends RecyclerView.ViewHolder {
-
-        CardView cv;
-        ImageView stylePhoto;
-
-        public myHolder(View itemView) {
-            super(itemView);
-            cv = itemView.findViewById(R.id.allStyles);
-            stylePhoto = itemView.findViewById(R.id.style_pic);
-        }
-
-    }
-
-    //    viewholder与cardview绑定
-    @Override
-    public myHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup, false);
-        myHolder mh = new myHolder(v);
-        v.setOnClickListener(this);
-        return mh;
+        this.context = context;
     }
 
     @Override
-    public void onBindViewHolder(myHolder ViewHolder, int position) {
-        ViewHolder.stylePhoto.setImageResource(styles.get(position).photoId);
-        //将position保存在itemView的Tag中，以便点击时进行获取
-        ViewHolder.itemView.setTag(position);
-    }
+    public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup, false);
 
-    //    与recyclerView绑定
-    @Override
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
+        return new ViewHolder(view);
     }
 
     @Override
-    public void onClick(View v) {
-        if (mOnItemClickListener != null) {
-            //注意这里使用getTag方法获取position
-            mOnItemClickListener.onItemClick(v,(int)v.getTag());
-        }
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.mOnItemClickListener = listener;
+    public void onBindViewHolder(MyAdapter.ViewHolder viewHolder, int i) {
+        viewHolder.iv.setImageResource(styles.get(i).photoId);
     }
 
     @Override
@@ -81,4 +38,25 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.myHolder> implemen
         return styles.size();
     }
 
+
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private ImageView iv;
+
+        public ViewHolder(View view) {
+            super(view);
+
+            iv = view.findViewById(R.id.style_pic);
+            view.setOnClickListener(this);
+        }
+
+        // Handles the row being being clicked
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(context, "haha", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }
+

@@ -12,6 +12,7 @@ import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.StatFs;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -99,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
         shotBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, Photo_handler.class);
+                startActivity(intent);
                 parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
                 camera.autoFocus(new Camera.AutoFocusCallback(){
                     @Override
