@@ -46,10 +46,10 @@
         fab:menu_showShadow="true">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/recovery_button"
+            android:id="@+id/feed_back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_recovery"
+            android:src="@drawable/feed_back"
             fab:fab_colorNormal="#ff3d00"
             fab:fab_colorRipple="#ff7539"
             fab:fab_colorPressed="#ff3d00"
@@ -92,7 +92,5 @@
             android:layout_alignParentBottom="true"/>
 
     </RelativeLayout>
-
-    <include layout="@layout/count_time"/>
 
 </RelativeLayout>

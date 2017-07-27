@@ -27,6 +27,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         this.styleName = styleName;
     }
 
+    public void updateData(int[] newUseTime) {
+        this.useTime = newUseTime;
+        notifyDataSetChanged();
+    }
+
     @Override
     public MyAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.list_item, viewGroup, false);
@@ -37,6 +42,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(MyAdapter.ViewHolder viewHolder, int i) {
         viewHolder.iv.setImageResource(styles.get(i).photoId);
+        viewHolder.tv.setText(String.valueOf(useTime[i]));
     }
 
     @Override
@@ -48,11 +54,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView iv;
+        private TextView tv;
 
         public ViewHolder(View view) {
             super(view);
 
             iv = view.findViewById(R.id.style_pic);
+            tv = view.findViewById(R.id.count_num);
             view.setOnClickListener(this);
         }
 
@@ -61,6 +69,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         public void onClick(View view) {
             Toast.makeText(context, styleName[getAdapterPosition()], Toast.LENGTH_SHORT).show();
             useTime[getAdapterPosition()] += 1;
+            updateData(useTime);
         }
     }
 

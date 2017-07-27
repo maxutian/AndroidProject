@@ -15,7 +15,6 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
@@ -25,7 +24,7 @@ import java.util.List;
 
 public class Photo_handler extends Activity {
 
-    private FloatingActionButton backBtn,recoveryBtn,shareBtn,downloadBtn;
+    private FloatingActionButton backBtn,feedBackBtn,shareBtn,downloadBtn;
     private List<Styles> styles;
     private String[] styleName = {"style_001", "style_002", "style_003", "style_004"};
     private int[] useTime = {0, 0, 0, 0};
@@ -56,7 +55,7 @@ public class Photo_handler extends Activity {
 
     public void init () {
         backBtn = findViewById(R.id.back_button);
-        recoveryBtn = findViewById(R.id.recovery_button);
+        feedBackBtn = findViewById(R.id.feed_back_button);
         shareBtn = findViewById(R.id.share_button);
         downloadBtn = findViewById(R.id.download_button);
         rv = findViewById(R.id.list_view);
@@ -135,11 +134,11 @@ public class Photo_handler extends Activity {
             }
         });
 
-//        恢复图片按钮
-        recoveryBtn.setOnClickListener(new View.OnClickListener() {
+//        反馈按钮
+        feedBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(Photo_handler.this, "recovery", Toast.LENGTH_SHORT).show();
+                
             }
         });
 

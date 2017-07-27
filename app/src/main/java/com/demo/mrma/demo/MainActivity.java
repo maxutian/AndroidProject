@@ -2,7 +2,6 @@ package com.demo.mrma.demo;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -12,8 +11,6 @@ import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Environment;
-import android.os.StatFs;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,21 +20,14 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.widget.Toast;
 
 import com.github.clans.fab.FloatingActionButton;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 
-import utils.Configutils;
-
-import static java.lang.System.out;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -51,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
     private static final int PHOTO_REQUEST_GALLERY = 2;
     int position = 0;//1表示前置摄像头，0表示后置摄像头
     private File tempFile;
-    private Uri sharePic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -210,10 +199,6 @@ public class MainActivity extends AppCompatActivity {
 
             if (data.length > 0){  //大于0代表有数据
                 Bitmap bitmap = BitmapFactory.decodeByteArray(data,0,data.length);
-//                Intent intent = new Intent();
-//                intent.setClass(MainActivity.this, Photo_handler.class);
-//                intent.putExtra("selectedImage", bitmap);
-//                startActivity(intent);
                 if(bitmap!=null){
 
                     File file=new File(Environment.getExternalStorageDirectory()+"/isifeng");
@@ -241,6 +226,10 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, Photo_handler.class);
+                intent.putExtra("selectedImage", bitmap);
+                startActivity(intent);
             }
         }
     }
