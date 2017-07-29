@@ -138,7 +138,9 @@ public class Photo_handler extends Activity {
         feedBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+                Intent feedback = new Intent();
+                feedback.setClass(Photo_handler.this, Feed_Back.class);
+                startActivity(feedback);
             }
         });
 
