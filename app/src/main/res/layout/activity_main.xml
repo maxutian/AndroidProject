@@ -5,10 +5,19 @@
     android:layout_height="match_parent"
     android:background="@android:color/darker_gray">
 
-    <SurfaceView
-        android:id="@+id/surfaceview"
+    <TextureView
+        android:id="@+id/textureView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/iv_show_camera2_activity"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:visibility="gone"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:scaleType="centerCrop" />
 
     <com.github.clans.fab.FloatingActionButton
         android:id="@+id/flash_button"

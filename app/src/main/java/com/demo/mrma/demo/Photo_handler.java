@@ -1,22 +1,19 @@
 package com.demo.mrma.demo;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.provider.MediaStore;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.demo.mrma.demo.Helper.BitmapHelper;
 import com.github.clans.fab.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -28,10 +25,10 @@ public class Photo_handler extends Activity {
     private List<Styles> styles;
     private String[] styleName = {"style_001", "style_002", "style_003", "style_004"};
     private int[] useTime = {0, 0, 0, 0};
+    private Bitmap srcBmp;
     private RecyclerView rv;
     private MyAdapter myAdapter;
     private ImageView iv_image;
-    private Uri myUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +44,11 @@ public class Photo_handler extends Activity {
         rv.setHasFixedSize(true);
         rv.setLayoutManager(linearLayoutManager);
 //        设置adapter
-        myAdapter = new MyAdapter(Photo_handler.this, styles, styleName, useTime);
+        myAdapter = new MyAdapter(Photo_handler.this, styles, styleName, useTime, srcBmp);
         rv.setAdapter(myAdapter);
 //        设置imgview图片
-        receive();
+        srcBmp = BitmapHelper.getInstance().getBitmap();
+        iv_image.setImageBitmap(srcBmp);
     }
 
     public void init () {
@@ -72,54 +70,6 @@ public class Photo_handler extends Activity {
         styles.add(new Styles(R.drawable.style_004));
 
 
-    }
-
-    //    接收uri&&bitmap
-    public void receive () {
-        Intent intent = getIntent();
-        if (intent != null) {
-            Uri uri = getIntent().getData();
-            myUri = uri;
-            Bitmap bitmap = getBitmapFromUri(uri);
-            iv_image.setImageBitmap(bitmap);
-        }
-        Bitmap bitmap = this.getIntent().getParcelableExtra("selectedImage");
-        if(bitmap != null)
-        {
-            int width = bitmap.getWidth();
-            int height = bitmap.getHeight();
-            // 设置想要的大小
-            WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
-            int newWidth = display.getWidth();
-            int newHeight = display.getHeight();
-            // 计算缩放比例
-            float scaleWidth = ((float) newWidth) / height;
-            float scaleHeight = ((float) newHeight) / width;
-            // 取得想要缩放的matrix参数
-            Matrix matrix = new Matrix();
-            matrix.setRotate(90);
-            matrix.postScale(scaleWidth, scaleHeight);
-            // 得到新的图片
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
-            iv_image.setImageBitmap(bitmap);
-            iv_image.invalidate();
-        }
-    }
-
-    //    将uri转成bitmap对象
-    private Bitmap getBitmapFromUri(Uri uri)
-    {
-        try
-        {
-            // 读取uri所在的图片
-            return (MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri));
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     public void allClick() {
@@ -148,7 +98,6 @@ public class Photo_handler extends Activity {
         shareBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                shareImg(myUri);
             }
         });
 

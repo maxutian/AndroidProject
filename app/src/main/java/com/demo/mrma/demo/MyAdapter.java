@@ -1,6 +1,7 @@
 package com.demo.mrma.demo;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,7 +21,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private int[] useTime;
 
 
-    public MyAdapter(Context context, List<Styles> styles, String[] styleName, int[] useTime){
+    public MyAdapter(Context context, List<Styles> styles, String[] styleName, int[] useTime, Bitmap srcBmp){
         this.styles = styles;
         this.context = context;
         this.useTime = useTime;

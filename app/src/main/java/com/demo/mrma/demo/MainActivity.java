@@ -2,373 +2,414 @@ package com.demo.mrma.demo;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.PixelFormat;
-import android.hardware.Camera;
+import android.graphics.ImageFormat;
+import android.graphics.SurfaceTexture;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraDevice;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
+import android.hardware.camera2.TotalCaptureResult;
+import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
+import android.media.ImageReader;
 import android.net.Uri;
-import android.os.Environment;
+import android.net.wifi.aware.Characteristics;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Size;
+import android.util.SparseIntArray;
 import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
+import android.widget.Toast;
 
+import com.demo.mrma.demo.Helper.BitmapHelper;
 import com.github.clans.fab.FloatingActionButton;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 
 
 public class MainActivity extends AppCompatActivity {
 
-    private FloatingActionButton flashBtn,shotBtn,frontCameraBtn,albumBtn;
-    SurfaceView surfaceview = null;
-    SurfaceHolder holder = null;
-    Camera camera = null;
-    Camera.Parameters parameters = null;
-    boolean isOpenLightSign = false;
-    private static final int PHOTO_REQUEST_GALLERY = 2;
-    int position = 0;//1表示前置摄像头，0表示后置摄像头
-    private File tempFile;
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+
+    ///为了使照片竖直显示
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
+
+    private FloatingActionButton flashBtn, shotBtn, frontCameraBtn, albumBtn;
+    private TextureView textureView;
+    private static final int IMAGE = 1;
+    private static final String CAMERA_FRONT = "1";
+    private static final String CAMERA_BACK = "0";
+    private String cameraId = CAMERA_BACK;
+    private CameraDevice cameraDevice;
+    private CameraCaptureSession cameraCaptureSessions;
+    private CaptureRequest.Builder captureRequestBuilder;
+    private Size imageDimension;
+
+    private File file;
+    private static final int REQUEST_CAMERA_PERMISSION = 200;
+    private boolean mFlashSupproted;
+    private boolean isTorchOn = false;
+    private Handler mBackgroundHandler;
+    private HandlerThread mBackgroundThread;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        初始化
-        init();
-//        所有点击事件
-        allClick();
-//        初始化拍照界面
-        setCamera();
+
+        textureView = (TextureView) findViewById(R.id.textureView);
+        assert textureView != null;
+        textureView.setSurfaceTextureListener(textureListener);
+        initBtns();
+        allClicks();
     }
 
-//    实例化变量
-    public void init () {
-        flashBtn = (FloatingActionButton) findViewById(R.id.flash_button);
+    @Override
+    protected void onResume() {
+        startBackgroundThread();
+        if (textureView.isAvailable()){
+            openCamera();
+        } else {
+            textureView.setSurfaceTextureListener(textureListener);
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        cameraCaptureSessions.close();
+        stopBackgroundThread();
+        super.onPause();
+    }
+
+    private void initBtns() {
         shotBtn = (FloatingActionButton) findViewById(R.id.camera_button);
-        albumBtn = (FloatingActionButton) findViewById(R.id.album_button);
         frontCameraBtn = (FloatingActionButton) findViewById(R.id.front_camera_button);
-        surfaceview = (SurfaceView) findViewById(R.id.surfaceview);
+        albumBtn = (FloatingActionButton) findViewById(R.id.album_button);
+        flashBtn = (FloatingActionButton) findViewById(R.id.flash_button);
     }
 
-    public void setCamera () {
-
-    /*
-        * 画面捕捉*/
-    if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-        Log.i("TEST","Granted");
-        //init(barcodeScannerView, getIntent(), null);
-    } else {
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.CAMERA}, 1);//1 can be another integer
-    }
-    holder = surfaceview.getHolder();
-    holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-//    holder.setFixedSize(177,144);
-    holder.setKeepScreenOn(true);
-    holder.addCallback(new MySurfaceCallBack());  //回调函数
-
-    }
-
-//    所有点击事件
-    public void allClick () {
-
-//        拍照按钮
+    private void allClicks() {
         shotBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, Photo_handler.class);
-                startActivity(intent);
-                parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
-                camera.autoFocus(new Camera.AutoFocusCallback(){
-                    @Override
-                    public void onAutoFocus(boolean success, Camera camera) {
-                        if(success){
-                            camera.takePicture(null,null,new TakePic());
-
-                        }
-                    }
-                });
+                takePicture();
             }
         });
 
-//        切换摄像头
         frontCameraBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeCamera();
+                switchCamera();
             }
         });
 
-//        相册按钮
         albumBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gallery();
+                Intent intent = new Intent(Intent.ACTION_PICK,
+                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(intent, IMAGE);
             }
         });
 
-//        切换闪光灯按钮
         flashBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                changeLight();
-                isOpenLightSign = !isOpenLightSign;    //更改状态
+                try {
+                    setFlash();
+                } catch (CameraAccessException e) {
+                    e.printStackTrace();
+                }
             }
         });
-
     }
 
-    /*
-    * 闪光灯*/
-    private void changeLight(){
-        Camera.Parameters parameters = camera.getParameters();
-        if (isOpenLightSign){
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            flashBtn.setImageResource(R.drawable.ic_flash_off);
-        }else {
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_ON);
-            flashBtn.setImageResource(R.drawable.ic_flash);
-        }
-        camera.setParameters(parameters);
-    }
-
-    /*
-    * 摄像头切换*/
-    private void changeCamera(){
-        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-        int count = Camera.getNumberOfCameras();    //获取摄像头个数
-        for (int i = 0;i < count;i++){
-            Camera.getCameraInfo(i,cameraInfo);
-            if (position == 1){
-                if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK){
-                    try {
-                        camera.stopPreview();    //停止预览
-                        camera.release();
-                        camera = null;
-                        camera = Camera.open(i);
-                        camera.setDisplayOrientation(getRotation(MainActivity.this));
-                        camera.setPreviewDisplay(holder);
-                        camera.startPreview();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    position = 0;
-                    break;
-                }
-
-            }else {
-                if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT){
-                    try {
-                        camera.stopPreview();
-                        camera.release();
-                        camera = null;
-                        camera = Camera.open(i);
-                        camera.setDisplayOrientation(getRotation(MainActivity.this));
-                        camera.setPreviewDisplay(holder);
-                        camera.startPreview();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    position = 1;
-                    break;
-                }
-
-            }
-        }
-
-    }
-
-    class TakePic implements Camera.PictureCallback{
-
-        @Override
-        public void onPictureTaken(byte[] data, Camera camera) {
-
-            if (data.length > 0){  //大于0代表有数据
-                Bitmap bitmap = BitmapFactory.decodeByteArray(data,0,data.length);
-                if(bitmap!=null){
-
-                    File file=new File(Environment.getExternalStorageDirectory()+"/isifeng");
-                    if(!file.isDirectory()){
-                        file.mkdir();
-                    }
-
-                    file=new File(Environment.getExternalStorageDirectory()+"/isifeng",System.currentTimeMillis()+".jpg");
-
-
-                    try
-                    {
-                        FileOutputStream fileOutputStream=new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG,100, fileOutputStream);
-
-                        fileOutputStream.flush();
-                        fileOutputStream.close();
-                    }
-                    catch(IOException e){
-                        e.printStackTrace();
-                    }
-                    catch(Exception exception)
-                    {
-                        exception.printStackTrace();
-                    }
-
-                }
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, Photo_handler.class);
-                intent.putExtra("selectedImage", bitmap);
-                startActivity(intent);
-            }
-        }
-    }
-
-    /*
-    * 回调函数*/
-    class MySurfaceCallBack implements SurfaceHolder.Callback{
-
-        @Override
-        public void surfaceCreated(SurfaceHolder surfaceHolder) {
-            try {
-                camera = Camera.open();
-                camera.setDisplayOrientation(getRotation(MainActivity.this));
-                camera.setPreviewDisplay(holder);
-                camera.startPreview();  //画面开始预览
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        /*
-        * 画面参数*/
-        public void surfaceChanged(SurfaceHolder surfaceHolder, int i, int i1, int i2) {
-
-            parameters = camera.getParameters();
-            List<Camera.Size> supportedPictureSizes = parameters.getSupportedPictureSizes();  //画面大小
-            if (supportedPictureSizes.isEmpty()){
-                parameters.setPreviewSize(i1,i2);
-
-            }else {
-                Camera.Size size = supportedPictureSizes.get(0);
-                parameters.setPreviewSize(size.width,size.height);  //预览
-            }
-            parameters.setPictureFormat(PixelFormat.JPEG);  //格式
-            parameters.setPictureSize(i1,i2);  //大小
-            parameters.setJpegQuality(80);  //质量
-            parameters.setPreviewFrameRate(5);  //每秒帧数
-            System.out.println(i1);
-
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            if (camera != null){
-                camera.release();
-                camera = null;
-            }
-        }
-    }
-
-    /*
-    * 界面旋转*/
-    private int getRotation(Activity activity){
-        int rotation = activity.getWindowManager().getDefaultDisplay().getRotation();//界面旋转程度
-        int degree = 0;
-        switch (rotation){
-            case Surface.ROTATION_0:
-                degree = 90;
-                break;
-            case Surface.ROTATION_90:
-                degree = 0;
-                break;
-            case Surface.ROTATION_180:
-                degree = 270;
-                break;
-            case Surface.ROTATION_270:
-                degree = 180;
-                break;
-        }
-        return degree;
-    }
-
-    @Override
-    /*
-    * 画面失去焦点*/
-    protected void onPause() {
-        super.onPause();
-        if (camera != null)
-            camera.stopPreview();
-    }
-
-    @Override
-    /*
-    * 画面恢复*/
-    protected void onRestart() {
-        super.onRestart();
-        if (camera != null){
-            camera.startPreview();
-        }else {
-            try {
-                camera = Camera.open();
-                camera.setDisplayOrientation(getRotation(MainActivity.this));
-                camera.setPreviewDisplay(holder);
-                camera.startPreview();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    /*
-    * 摄像适配*/
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-
-//    打开相册
-    public void gallery() {
-        // 激活系统图库，选择一张图片
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        // 开启一个带有返回值的Activity，请求码为PHOTO_REQUEST_GALLERY
-        startActivityForResult(intent, PHOTO_REQUEST_GALLERY);
-    }
-
-//    返回选中的图片
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PHOTO_REQUEST_GALLERY) {
-            // 从相册返回的数据
-            if (data != null) {
-                // 得到图片的全路径
-                Uri uri = data.getData();
-                // 传递uri
-                Intent intent = new Intent();
-                intent.setClass(MainActivity.this, Photo_handler.class);
-                intent.setData(uri);
-                startActivity(intent);
-            }
-            try {
-                // 将临时文件删除
-                tempFile.delete();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == IMAGE && resultCode == Activity.RESULT_OK && data != null) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumns = {MediaStore.Images.Media.DATA};
+            Cursor c = getContentResolver().query(selectedImage, filePathColumns, null, null, null);
+            c.moveToFirst();
+            int columnIndex = c.getColumnIndex(filePathColumns[0]);
+            String imagePath = c.getString(columnIndex);
+            transImage(imagePath);
+            c.close();
+        }
     }
 
+    private void transImage(String imagePath) {
+        Bitmap bmp = BitmapFactory.decodeFile(imagePath);
+        BitmapHelper.getInstance().setBitmap(bmp);
+        Intent intent = new Intent(MainActivity.this, Photo_handler.class);
+        startActivity(intent);
+    }
+
+    private void openCamera() {
+        CameraManager manager = (CameraManager)getSystemService(Context.CAMERA_SERVICE);
+        try{
+            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
+            StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            Boolean available = characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE);
+            mFlashSupproted = available == null ? false : available;
+            assert map != null;
+            imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]{
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                }, REQUEST_CAMERA_PERMISSION);
+                return;
+            }
+            manager.openCamera(cameraId, new CameraDevice.StateCallback() {
+                @Override
+                public void onOpened(@NonNull CameraDevice camera) {
+                    cameraDevice = camera;
+                    createCameraPreview();
+                }
+
+                @Override
+                public void onDisconnected(@NonNull CameraDevice camera) {
+                    cameraDevice.close();
+                }
+
+                @Override
+                public void onError(@NonNull CameraDevice camera, int i) {
+                    if (camera == null){
+                        cameraDevice.close();
+                        cameraDevice = null;
+                    }
+                }
+            }, mBackgroundHandler);
+        }catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void takePicture() {
+        if (cameraDevice == null)
+            return;
+        try{
+            final ImageReader reader = ImageReader.newInstance(1920, 1080, ImageFormat.JPEG, 1);
+            List<Surface> outputSurface = new ArrayList<>(2);
+            outputSurface.add(reader.getSurface());
+            outputSurface.add(new Surface(textureView.getSurfaceTexture()));
+
+            final CaptureRequest.Builder captureBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+            captureBuilder.addTarget(reader.getSurface());
+            captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+
+            int rotation = getWindowManager().getDefaultDisplay().getRotation();
+            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+
+//            file = new File(Environment.getExternalStorageDirectory()+"/"+UUID.randomUUID().toString()+".jpg");
+            ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
+                @Override
+                public void onImageAvailable(ImageReader imageReader) {
+                    Image image = null;
+                    try{
+                        image = reader.acquireLatestImage();
+                        ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+                        byte[] bytes = new byte[buffer.capacity()];
+                        buffer.get(bytes);
+//                        save(bytes);
+                        final Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                        Intent intent = new Intent(MainActivity.this, Photo_handler.class);
+                        BitmapHelper.getInstance().setBitmap(bmp);
+                        startActivity(intent);
+                    }
+                    finally {
+                        {
+                            if (image != null)
+                                image.close();
+                        }
+                    }
+
+                }
+//                private void save(byte[] bytes) throws IOException {
+//                    OutputStream outputStream = null;
+//                    try {
+//                        outputStream = new FileOutputStream(file);
+//                        outputStream.write(bytes);
+//                    }finally {
+//                        if (outputStream != null)
+//                            outputStream.close();
+//                    }
+//                }
+            };
+
+            reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
+            final CameraCaptureSession.CaptureCallback captureListener = new CameraCaptureSession.CaptureCallback() {
+                @Override
+                public void onCaptureCompleted(@NonNull CameraCaptureSession session, @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                    super.onCaptureCompleted(session, request, result);
+                }
+            };
+
+            cameraDevice.createCaptureSession(outputSurface, new CameraCaptureSession.StateCallback() {
+                @Override
+                public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                    try{
+                        cameraCaptureSession.capture(captureBuilder.build(), captureListener, mBackgroundHandler);
+                    }catch (CameraAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+
+                }
+            }, mBackgroundHandler);
+
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createCameraPreview() {
+        try{
+            SurfaceTexture texture = textureView.getSurfaceTexture();
+            assert texture != null;
+            texture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
+            Surface surface = new Surface(texture);
+            captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            captureRequestBuilder.addTarget(surface);
+            cameraDevice.createCaptureSession(Arrays.asList(surface), new CameraCaptureSession.StateCallback() {
+                @Override
+                public void onConfigured(@NonNull CameraCaptureSession cameraCaptureSession) {
+                    if (cameraDevice == null)
+                        return;
+                    cameraCaptureSessions = cameraCaptureSession;
+                    updatePreview();
+                }
+
+                @Override
+                public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+                    Toast.makeText(MainActivity.this, "Changed", Toast.LENGTH_SHORT).show();
+                }
+            }, null);
+        } catch (CameraAccessException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void updatePreview() {
+        if (cameraDevice == null)
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+        captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_AUTO);
+        try{
+            cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void switchCamera() {
+        if (cameraId == CAMERA_BACK) {
+            cameraId = CAMERA_FRONT;
+            cameraDevice.close();
+            openCamera();
+        } else if (cameraId == CAMERA_FRONT) {
+            cameraId = CAMERA_BACK;
+            cameraDevice.close();
+            openCamera();
+        }
+    }
+
+    private void setFlash() throws CameraAccessException {
+        if (cameraId == "0" && mFlashSupproted && captureRequestBuilder != null){
+            if (isTorchOn){
+                captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_OFF);
+                cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
+                flashBtn.setImageResource(R.drawable.ic_flash_off);
+                isTorchOn = false;
+            } else {
+                captureRequestBuilder.set(CaptureRequest.FLASH_MODE, CaptureRequest.FLASH_MODE_TORCH);
+                cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
+                flashBtn.setImageResource(R.drawable.ic_flash);
+                isTorchOn = true;
+            }
+        }
+    }
+
+    TextureView.SurfaceTextureListener textureListener = new TextureView.SurfaceTextureListener() {
+        @Override
+        public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
+            openCamera();
+        }
+
+        @Override
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
+
+        }
+
+        @Override
+        public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+            return false;
+        }
+
+        @Override
+        public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
+
+        }
+    };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CAMERA_PERMISSION){
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "No Camera Permission", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+
+
+
+    private void stopBackgroundThread() {
+        mBackgroundThread.quitSafely();
+        try{
+            mBackgroundThread.join();
+            mBackgroundThread = null;
+            mBackgroundHandler = null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startBackgroundThread() {
+        mBackgroundThread = new HandlerThread("Camera Background");
+        mBackgroundThread.start();
+        mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+    }
 }
