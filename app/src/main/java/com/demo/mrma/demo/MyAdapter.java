@@ -2,6 +2,10 @@ package com.demo.mrma.demo;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Paint;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,13 +23,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     private Context context;
     private String[] styleName;
     private int[] useTime;
+    private Bitmap srcBmp;
+    private ImageView img_view;
 
 
-    public MyAdapter(Context context, List<Styles> styles, String[] styleName, int[] useTime, Bitmap srcBmp){
+    public MyAdapter(Context context, List<Styles> styles, String[] styleName,
+                     int[] useTime, Bitmap srcBmp, ImageView img_view){
         this.styles = styles;
         this.context = context;
         this.useTime = useTime;
         this.styleName = styleName;
+        this.srcBmp = srcBmp;
+        this.img_view = img_view;
     }
 
     public void updateData(int[] newUseTime) {
@@ -68,10 +77,40 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         // Handles the row being being clicked
         @Override
         public void onClick(View view) {
+            img_view.setImageBitmap(addStyleToBitmap(getImgStyle(styleName[getAdapterPosition()])));
             Toast.makeText(context, styleName[getAdapterPosition()], Toast.LENGTH_SHORT).show();
             useTime[getAdapterPosition()] += 1;
             updateData(useTime);
         }
+    }
+
+    private float[] getImgStyle(String styleName){
+        float[] selectedMatrix = StyleMatrixs.common();
+        switch (styleName){
+            case "GRAY_SCALE":
+                selectedMatrix = StyleMatrixs.greyScale();
+                break;
+            case "SEPIA":
+                selectedMatrix = StyleMatrixs.sepia();
+                break;
+            case "BRIGHT":
+                selectedMatrix = StyleMatrixs.bright();
+                break;
+            case "VINTAGE_PINHOLE":
+                selectedMatrix = StyleMatrixs.vintagePinhole();
+                break;
+        }
+        return selectedMatrix;
+    }
+
+    private Bitmap addStyleToBitmap(float[] style){
+        ColorMatrixColorFilter colorFilter = new ColorMatrixColorFilter(style);
+        Bitmap newBmp = srcBmp.copy(srcBmp.getConfig(), true);
+        Canvas canvas = new Canvas(newBmp);
+        Paint paint = new Paint();
+        paint.setColorFilter(colorFilter);
+        canvas.drawBitmap(newBmp, 0, 0, paint);
+        return newBmp;
     }
 
 }

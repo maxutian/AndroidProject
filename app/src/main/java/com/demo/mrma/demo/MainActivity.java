@@ -22,7 +22,6 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
 import android.net.Uri;
-import android.net.wifi.aware.Characteristics;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.provider.MediaStore;
@@ -31,7 +30,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
 import android.view.Surface;
@@ -51,14 +49,24 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    private static final SparseIntArray BACK_ORIENTATIONS = new SparseIntArray();
 
     ///为了使照片竖直显示
     static {
-        ORIENTATIONS.append(Surface.ROTATION_0, 90);
-        ORIENTATIONS.append(Surface.ROTATION_90, 0);
-        ORIENTATIONS.append(Surface.ROTATION_180, 270);
-        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+        BACK_ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        BACK_ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        BACK_ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        BACK_ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
+
+    private static final SparseIntArray FRONT_ORIENTATIONS = new SparseIntArray();
+
+    ///为了使照片竖直显示
+    static {
+        FRONT_ORIENTATIONS.append(Surface.ROTATION_0, 270);
+        FRONT_ORIENTATIONS.append(Surface.ROTATION_90, 180);
+        FRONT_ORIENTATIONS.append(Surface.ROTATION_180, 90);
+        FRONT_ORIENTATIONS.append(Surface.ROTATION_270, 0);
     }
 
     private FloatingActionButton flashBtn, shotBtn, frontCameraBtn, albumBtn;
@@ -72,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
     private CaptureRequest.Builder captureRequestBuilder;
     private Size imageDimension;
 
-    private File file;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     private boolean mFlashSupproted;
     private boolean isTorchOn = false;
@@ -106,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         cameraCaptureSessions.close();
         stopBackgroundThread();
+        cameraDevice = null;
         super.onPause();
     }
 
@@ -204,10 +212,8 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onError(@NonNull CameraDevice camera, int i) {
-                    if (camera == null){
-                        cameraDevice.close();
-                        cameraDevice = null;
-                    }
+                    cameraDevice.close();
+                    cameraDevice = null;
                 }
             }, mBackgroundHandler);
         }catch (CameraAccessException e) {
@@ -229,9 +235,12 @@ public class MainActivity extends AppCompatActivity {
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            if (cameraId == CAMERA_BACK){
+                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, BACK_ORIENTATIONS.get(rotation));
+            } else if (cameraId == CAMERA_FRONT){
+                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, FRONT_ORIENTATIONS.get(rotation));
+            }
 
-//            file = new File(Environment.getExternalStorageDirectory()+"/"+UUID.randomUUID().toString()+".jpg");
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader imageReader) {
@@ -241,7 +250,6 @@ public class MainActivity extends AppCompatActivity {
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                         byte[] bytes = new byte[buffer.capacity()];
                         buffer.get(bytes);
-//                        save(bytes);
                         final Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                         Intent intent = new Intent(MainActivity.this, Photo_handler.class);
                         BitmapHelper.getInstance().setBitmap(bmp);
@@ -255,16 +263,6 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                 }
-//                private void save(byte[] bytes) throws IOException {
-//                    OutputStream outputStream = null;
-//                    try {
-//                        outputStream = new FileOutputStream(file);
-//                        outputStream.write(bytes);
-//                    }finally {
-//                        if (outputStream != null)
-//                            outputStream.close();
-//                    }
-//                }
             };
 
             reader.setOnImageAvailableListener(readerListener, mBackgroundHandler);
