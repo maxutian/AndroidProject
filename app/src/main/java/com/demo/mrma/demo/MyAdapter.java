@@ -60,8 +60,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return styles.size();
     }
 
-
-
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView iv;
         private TextView tv;

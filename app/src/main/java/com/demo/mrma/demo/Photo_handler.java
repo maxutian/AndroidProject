@@ -56,7 +56,8 @@ public class Photo_handler extends Activity {
         srcBmp = BitmapHelper.getInstance().getBitmap();
         iv_image.setImageBitmap(srcBmp);
 //        设置adapter
-        myAdapter = new MyAdapter(Photo_handler.this, styles, styleName, useTime, srcBmp, iv_image);
+        myAdapter = new MyAdapter(Photo_handler.this, styles, styleName, 
+        useTime, srcBmp, iv_image);
         rv.setAdapter(myAdapter);
     }
 
